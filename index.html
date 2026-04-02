@@ -1,22 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/3/Bird.png"/>
-    <title>Flappy Bird Game</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Ultimate RGB Glow</title>
+
+<style>
+    
+body {
+  margin: 0;
+  background: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  gap: 30px;
+  font-family: sans-serif;
+}
+
+/* CARD */
+.glow-card {
+  width: 260px;
+  height: 320px;
+  background: #111;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  color: white;
+  cursor: pointer;
+}
+
+/* RGB GLOW LAYER */
+.glow-card::before {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  top: var(--y, 50%);
+  left: var(--x, 50%);
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    red,
+    orange,
+    yellow,
+    lime,
+    cyan,
+    blue,
+    magenta,
+    red
+  );
+  opacity: 0;
+  transition: opacity 0.2s;
+  filter: blur(40px);
+  animation: spin 6s linear infinite;
+}
+.glow-card:hover::before {
+  opacity: 1;
+}
+
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+
+.glow-card h2 {
+  position: relative;
+  font-size: 42px;
+  opacity: 0.7;
+}
+
+.glow-card p {
+  position: relative;
+  color: #aaa;
+}
+
+/* ANIMATION */
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+</style>
 </head>
+
 <body>
-    <div class="background"></div>
-    <img src="/3/Bird.png" alt="bird-img" class="bird" id="bird-1">
-    <div class="message">
-        Enter To Start Game <p><span style="color: red;">&uarr;</span> ArrowUp to Control</p>
-    </div>
-    <div class="score">
-        <span class="score_title"></span>
-        <span class="score_val"></span>
-    </div>
+
+<div class="glow-card">
+  <h2>01</h2>
+  <p>Move your mouse over the card</p>
+</div>
+
+<div class="glow-card">
+  <h2>02</h2>
+  <p>Move your mouse over the card</p>
+</div>
+
+<div class="glow-card">
+  <h2>03</h2>
+  <p>Move your mouse over the card</p>
+</div>
+
+<script>
+document.addEventListener("mousemove", function(e) {
+  document.querySelectorAll(".glow-card").forEach(card => {
+    const rect = card.getBoundingClientRect();
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
+      card.style.setProperty("--x", x + "px");
+      card.style.setProperty("--y", y + "px");
+    }
+  });
+});
+</script>
+
 </body>
 </html>
