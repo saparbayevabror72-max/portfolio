@@ -2,119 +2,174 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<title>Ultimate RGB Glow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfect Roulette</title>
 
 <style>
-    
-body {
-  margin: 0;
-  background: #000000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  gap: 30px;
-  font-family: sans-serif;
+body{
+    margin:0;
+    font-family:Arial;
+    background: radial-gradient(circle,#111,#000);
+    color:white;
+    text-align:center;
 }
 
-/* CARD */
-.glow-card {
-  width: 260px;
-  height: 320px;
-  background: #111;
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-  padding: 20px;
-  color: white;
-  cursor: pointer;
+h1{
+    color:#ffd700;
+    margin-top:15px;
 }
 
-/* RGB GLOW LAYER */
-.glow-card::before {
-  content: "";
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  top: var(--y, 50%);
-  left: var(--x, 50%);
-  transform: translate(-50%, -50%);
-  background: conic-gradient(
-    red,
-    orange,
-    yellow,
-    lime,
-    cyan,
-    blue,
-    magenta,
-    red
-  );
-  opacity: 0;
-  transition: opacity 0.2s;
-  filter: blur(40px);
-  animation: spin 6s linear infinite;
-}
-.glow-card:hover::before {
-  opacity: 1;
+input{
+    padding:10px;
+    width:220px;
+    border-radius:10px;
+    border:none;
+    outline:none;
+    margin-top:10px;
 }
 
-.glow-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    background:#ffd700;
+    font-weight:bold;
+    cursor:pointer;
+    margin:5px;
 }
 
-.glow-card h2 {
-  position: relative;
-  font-size: 42px;
-  opacity: 0.7;
+.container{
+    position:relative;
+    width:340px;
+    height:340px;
+    margin:20px auto;
 }
 
-.glow-card p {
-  position: relative;
-  color: #aaa;
+.wheel{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    border:8px solid #ffd700;
+    position:relative;
+    transition: transform 4s cubic-bezier(0.17,0.67,0.12,0.99);
+    overflow:hidden;
 }
 
-/* ANIMATION */
-@keyframes spin {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
+.pointer{
+    width:0;
+    height:0;
+    border-left:15px solid transparent;
+    border-right:15px solid transparent;
+    border-bottom:30px solid #ffd700;
+    position:absolute;
+    top:-20px;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.segment{
+    position:absolute;
+    width:50%;
+    height:50%;
+    top:50%;
+    left:50%;
+    transform-origin:0% 0%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+    color:white;
+    text-shadow:0 0 5px black;
+}
+
+#result{
+    margin-top:15px;
+    font-size:20px;
+    color:#00ff99;
 }
 </style>
 </head>
 
 <body>
 
-<div class="glow-card">
-  <h2>01</h2>
-  <p>Move your mouse over the card</p>
+<h1>🎡 Perfect Name Roulette</h1>
+
+<input id="nameInput" placeholder="Ism yozing...">
+<button onclick="addName()">➕ Qo‘shish</button>
+<button onclick="spin()">SPIN 🎰</button>
+
+<div class="container">
+    <div class="pointer"></div>
+    <div class="wheel" id="wheel"></div>
 </div>
 
-<div class="glow-card">
-  <h2>02</h2>
-  <p>Move your mouse over the card</p>
-</div>
-
-<div class="glow-card">
-  <h2>03</h2>
-  <p>Move your mouse over the card</p>
-</div>
+<div id="result"></div>
 
 <script>
-document.addEventListener("mousemove", function(e) {
-  document.querySelectorAll(".glow-card").forEach(card => {
-    const rect = card.getBoundingClientRect();
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+let names = [];
+let angle = 0;
 
-    if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
-      card.style.setProperty("--x", x + "px");
-      card.style.setProperty("--y", y + "px");
+const colors = ["#ff4d6d","#4cc9f0","#ffd166","#06d6a0","#8338ec","#ff9f1c"];
+
+function addName(){
+    let input = document.getElementById("nameInput");
+    let val = input.value.trim();
+
+    if(!val) return;
+
+    if(names.length >= 10){
+        alert("❌ Maksimum 10 ta ism!");
+        return;
     }
-  });
-});
+
+    names.push(val);
+    input.value = "";
+    draw();
+}
+
+function draw(){
+    const wheel = document.getElementById("wheel");
+    wheel.innerHTML = "";
+
+    let step = 360 / names.length;
+
+    names.forEach((name,i)=>{
+        let seg = document.createElement("div");
+        seg.className = "segment";
+        seg.innerText = name;
+
+        let rotate = i * step;
+
+        seg.style.background = colors[i % colors.length];
+        seg.style.transform = `rotate(${rotate}deg) translate(170px) rotate(${step/2}deg)`;
+
+        wheel.appendChild(seg);
+    });
+}
+
+function spin(){
+    if(names.length < 2){
+        alert("Kamida 2 ta ism!");
+        return;
+    }
+
+    const wheel = document.getElementById("wheel");
+
+    let random = Math.floor(Math.random()*3600);
+    angle += random;
+
+    wheel.style.transform = `rotate(${angle}deg)`;
+
+    setTimeout(()=>{
+        let step = 360 / names.length;
+        let index = Math.floor(((angle % 360) / step));
+        document.getElementById("result").innerText =
+        "🎁 Tanlandi: " + names[index];
+    },4000);
+}
+
 </script>
 
 </body>
