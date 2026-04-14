@@ -3,172 +3,177 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Perfect Roulette</title>
+<title>Bright Restaurant Menu</title>
 
 <style>
 body{
     margin:0;
-    font-family:Arial;
-    background: radial-gradient(circle,#111,#000);
-    color:white;
-    text-align:center;
+    font-family: Arial;
+    background: linear-gradient(135deg,#ff4ecd,#4cc9f0,#ffd60a);
+    min-height:100vh;
 }
 
 h1{
-    color:#ffd700;
-    margin-top:15px;
+    text-align:center;
+    color:white;
+    font-size:34px;
+    padding:20px;
+    text-shadow:2px 2px 10px black;
 }
 
-input{
-    padding:10px;
-    width:220px;
-    border-radius:10px;
-    border:none;
-    outline:none;
-    margin-top:10px;
+.filters{
+    text-align:center;
 }
 
 button{
-    padding:10px 15px;
-    border:none;
-    border-radius:10px;
-    background:#ffd700;
-    font-weight:bold;
-    cursor:pointer;
+    padding:10px 18px;
     margin:5px;
+    border:none;
+    border-radius:20px;
+    cursor:pointer;
+    background:white;
+    color:#ff006e;
+    font-weight:bold;
+    transition:0.2s;
+}
+
+button:hover{
+    transform:scale(1.1);
+    background:#ffbe0b;
 }
 
 .container{
-    position:relative;
-    width:340px;
-    height:340px;
-    margin:20px auto;
-}
-
-.wheel{
-    width:100%;
-    height:100%;
-    border-radius:50%;
-    border:8px solid #ffd700;
-    position:relative;
-    transition: transform 4s cubic-bezier(0.17,0.67,0.12,0.99);
-    overflow:hidden;
-}
-
-.pointer{
-    width:0;
-    height:0;
-    border-left:15px solid transparent;
-    border-right:15px solid transparent;
-    border-bottom:30px solid #ffd700;
-    position:absolute;
-    top:-20px;
-    left:50%;
-    transform:translateX(-50%);
-}
-
-.segment{
-    position:absolute;
-    width:50%;
-    height:50%;
-    top:50%;
-    left:50%;
-    transform-origin:0% 0%;
     display:flex;
-    align-items:center;
+    flex-wrap:wrap;
     justify-content:center;
-    font-size:12px;
-    font-weight:bold;
-    color:white;
-    text-shadow:0 0 5px black;
+    gap:15px;
+    padding:20px;
 }
 
-#result{
-    margin-top:15px;
-    font-size:20px;
-    color:#00ff99;
+.card{
+    width:210px;
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 10px 20px rgba(0,0,0,0.3);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-10px) scale(1.03);
+}
+
+.card img{
+    width:100%;
+    height:140px;
+    object-fit:cover;
+}
+
+.card h3{
+    margin:10px;
+    color:#ff006e;
+}
+
+.card p{
+    margin:10px;
+    font-weight:bold;
+    color:#3a86ff;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎡 Perfect Name Roulette</h1>
+<h1>🍭🍔 Bright Kids Restaurant Menu</h1>
 
-<input id="nameInput" placeholder="Ism yozing...">
-<button onclick="addName()">➕ Qo‘shish</button>
-<button onclick="spin()">SPIN 🎰</button>
-
-<div class="container">
-    <div class="pointer"></div>
-    <div class="wheel" id="wheel"></div>
+<div class="filters">
+<button onclick="filter('all')">All 🌈</button>
+<button onclick="filter('fastfood')">Fastfood 🍔</button>
+<button onclick="filter('dessert')">Dessert 🍰</button>
+<button onclick="filter('drink')">Drinks 🥤</button>
 </div>
 
-<div id="result"></div>
+<div class="container" id="menu"></div>
 
 <script>
 
-let names = [];
-let angle = 0;
+const items = [
+{n:"Burger", c:"fastfood", img:"https://images.unsplash.com/photo-1550547660-d9450f859349"},
+{n:"Pizza", c:"fastfood", img:"https://images.unsplash.com/photo-1548365328-9f547f8a11f3"},
+{n:"Hotdog", c:"fastfood", img:"https://images.unsplash.com/photo-1619740455993-9e612b1afc94"},
+{n:"Fries", c:"fastfood", img:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877"},
+{n:"Nuggets", c:"fastfood", img:"https://images.unsplash.com/photo-1562967916-eb82221dfb36"},
+{n:"Sandwich", c:"fastfood", img:"https://images.unsplash.com/photo-1550507992-eb63ffee0847"},
+{n:"Taco", c:"fastfood", img:"https://images.unsplash.com/photo-1613514785940-daed07799d9b"},
+{n:"Doner", c:"fastfood", img:"https://images.unsplash.com/photo-1606755962773-d324e0a13086"},
+{n:"Lavash", c:"fastfood", img:"https://images.unsplash.com/photo-1627308595229-7830a5c91f9f"},
+{n:"Cheeseburger", c:"fastfood", img:"https://images.unsplash.com/photo-1550547660-d9450f859349"},
 
-const colors = ["#ff4d6d","#4cc9f0","#ffd166","#06d6a0","#8338ec","#ff9f1c"];
+{n:"Ice Cream", c:"dessert", img:"https://images.unsplash.com/photo-1501443762994-82bd5dace89a"},
+{n:"Cake", c:"dessert", img:"https://images.unsplash.com/photo-1551024601-bec78aea704b"},
+{n:"Donut", c:"dessert", img:"https://images.unsplash.com/photo-1551024506-0bccd828d307"},
+{n:"Cupcake", c:"dessert", img:"https://images.unsplash.com/photo-1587668178277-295251f900ce"},
+{n:"Brownie", c:"dessert", img:"https://images.unsplash.com/photo-1606313564200-e75d5e30476c"},
+{n:"Waffle", c:"dessert", img:"https://images.unsplash.com/photo-1563805042-7684c019e1cb"},
+{n:"Pancake", c:"dessert", img:"https://images.unsplash.com/photo-1528207776546-365bb710ee93"},
+{n:"Chocolate", c:"dessert", img:"https://images.unsplash.com/photo-1511381939415-e44015466834"},
+{n:"Candy", c:"dessert", img:"https://images.unsplash.com/photo-1582058091505-f87a2e55a40f"},
+{n:"Pie", c:"dessert", img:"https://images.unsplash.com/photo-1519915028121-7d3463d20b13"},
 
-function addName(){
-    let input = document.getElementById("nameInput");
-    let val = input.value.trim();
+{n:"Coke", c:"drink", img:"https://images.unsplash.com/photo-1622484212850-eb596d769edc"},
+{n:"Pepsi", c:"drink", img:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e"},
+{n:"Fanta", c:"drink", img:"https://images.unsplash.com/photo-1606756790138-261d2b21cd75"},
+{n:"Water", c:"drink", img:"https://images.unsplash.com/photo-1523362628745-0c100150b504"},
+{n:"Juice", c:"drink", img:"https://images.unsplash.com/photo-1600271886742-f049cd451bba"},
+{n:"Milk", c:"drink", img:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d"},
+{n:"Coffee", c:"drink", img:"https://images.unsplash.com/photo-1509042239860-f550ce710b93"},
+{n:"Tea", c:"drink", img:"https://images.unsplash.com/photo-1556679343-c7306c1976bc"},
+{n:"Energy Drink", c:"drink", img:"https://images.unsplash.com/photo-1622543925917-763c34b8a86c"},
+{n:"Milkshake", c:"drink", img:"https://images.unsplash.com/photo-1551024601-bec78aea704b"},
 
-    if(!val) return;
+// +20 ta
+{n:"Chicken Burger", c:"fastfood", img:"https://images.unsplash.com/photo-1606755962773-d324e0a13086"},
+{n:"Double Burger", c:"fastfood", img:"https://images.unsplash.com/photo-1550547660-d9450f859349"},
+{n:"Beef Pizza", c:"fastfood", img:"https://images.unsplash.com/photo-1548365328-9f547f8a11f3"},
+{n:"Spicy Hotdog", c:"fastfood", img:"https://images.unsplash.com/photo-1619740455993-9e612b1afc94"},
+{n:"Cheese Fries", c:"fastfood", img:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877"},
+{n:"Strawberry Cake", c:"dessert", img:"https://images.unsplash.com/photo-1551024601-bec78aea704b"},
+{n:"Chocolate Cake", c:"dessert", img:"https://images.unsplash.com/photo-1551024601-bec78aea704b"},
+{n:"Vanilla Ice Cream", c:"dessert", img:"https://images.unsplash.com/photo-1501443762994-82bd5dace89a"},
+{n:"Apple Pie", c:"dessert", img:"https://images.unsplash.com/photo-1519915028121-7d3463d20b13"},
+{n:"Latte Coffee", c:"drink", img:"https://images.unsplash.com/photo-1509042239860-f550ce710b93"},
+{n:"Black Tea", c:"drink", img:"https://images.unsplash.com/photo-1556679343-c7306c1976bc"},
+{n:"Lemon Juice", c:"drink", img:"https://images.unsplash.com/photo-1600271886742-f049cd451bba"},
+{n:"Mojito", c:"drink", img:"https://images.unsplash.com/photo-1551024601-bec78aea704b"},
+{n:"Iced Coffee", c:"drink", img:"https://images.unsplash.com/photo-1511920170033-f8396924c348"},
+{n:"Hot Chocolate", c:"drink", img:"https://images.unsplash.com/photo-1542990253-0b8c8c7f2d1e"},
+{n:"Smoothie", c:"drink", img:"https://images.unsplash.com/photo-1551024601-bec78aea704b"},
+{n:"Mineral Water", c:"drink", img:"https://images.unsplash.com/photo-1523362628745-0c100150b504"},
+{n:"Orange Juice", c:"drink", img:"https://images.unsplash.com/photo-1600271886742-f049cd451bba"},
+{n:"Green Tea", c:"drink", img:"https://images.unsplash.com/photo-1556679343-c7306c1976bc"},
+{n:"Cheese Cake", c:"dessert", img:"https://images.unsplash.com/photo-1551024601-bec78aea704b"}
+];
 
-    if(names.length >= 10){
-        alert("❌ Maksimum 10 ta ism!");
-        return;
-    }
-
-    names.push(val);
-    input.value = "";
-    draw();
-}
-
-function draw(){
-    const wheel = document.getElementById("wheel");
-    wheel.innerHTML = "";
-
-    let step = 360 / names.length;
-
-    names.forEach((name,i)=>{
-        let seg = document.createElement("div");
-        seg.className = "segment";
-        seg.innerText = name;
-
-        let rotate = i * step;
-
-        seg.style.background = colors[i % colors.length];
-        seg.style.transform = `rotate(${rotate}deg) translate(170px) rotate(${step/2}deg)`;
-
-        wheel.appendChild(seg);
+function show(data){
+    const box = document.getElementById("menu");
+    box.innerHTML = "";
+    data.forEach(i=>{
+        box.innerHTML += `
+        <div class="card">
+            <img src="${i.img}">
+            <h3>${i.n}</h3>
+            <p>$ ${(5 + Math.floor(Math.random()*20))}</p>
+        </div>
+        `;
     });
 }
 
-function spin(){
-    if(names.length < 2){
-        alert("Kamida 2 ta ism!");
-        return;
-    }
-
-    const wheel = document.getElementById("wheel");
-
-    let random = Math.floor(Math.random()*3600);
-    angle += random;
-
-    wheel.style.transform = `rotate(${angle}deg)`;
-
-    setTimeout(()=>{
-        let step = 360 / names.length;
-        let index = Math.floor(((angle % 360) / step));
-        document.getElementById("result").innerText =
-        "🎁 Tanlandi: " + names[index];
-    },4000);
+function filter(cat){
+    if(cat === "all") show(items);
+    else show(items.filter(i=>i.c === cat));
 }
+
+show(items);
 
 </script>
 
